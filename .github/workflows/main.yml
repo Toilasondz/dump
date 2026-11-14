@@ -40,6 +40,11 @@ jobs:
           cp -R /tmp/sdks/*.sdk "$HOME/theos/sdks/"
           ls "$HOME/theos/sdks"
 
+      - name: Cài ldid (để ký tweak)
+        run: |
+          brew install ldid
+          ldid -v 2>&1 | head -1 || true
+
       - name: Build package
         working-directory: ${{ matrix.project }}
         run: |
