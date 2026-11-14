@@ -1,0 +1,52 @@
+# .github/workflows/main.yml
+# Đặt file này tại: <repo>/.github/workflows/main.yml
+# Build tweak Theos trên macOS runner, tạo file .deb và upload làm artifact.
+
+name: Build tweak
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Thêm thư mục tweak khác vào đây, ví dụ: ZZZZZZVideoStarTool
+        project: [VSDumpHeaders]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Cài Theos
+        run: |
+          if [ ! -d "$HOME/theos" ]; then
+            git clone --recursive https://github.com/theos/theos.git "$HOME/theos"
+          fi
+          echo "THEOS=$HOME/theos" >> "$GITHUB_ENV"
+
+      - name: Cài iOS SDK
+        run: |
+          git clone --depth 1 https://github.com/theos/sdks.git /tmp/sdks
+          mkdir -p "$HOME/theos/sdks"
+          cp -R /tmp/sdks/*.sdk "$HOME/theos/sdks/"
+          ls "$HOME/theos/sdks"
+
+      - name: Build package
+        working-directory: ${{ matrix.project }}
+        run: |
+          make clean
+          make package FINALPACKAGE=1
+
+      - name: Upload .deb
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.project }}-deb
+          path: ${{ matrix.project }}/packages/*.deb
+          if-no-files-found: error
