@@ -1,0 +1,9 @@
+Package: com.vsdump.headers
+Name: VSDumpHeaders
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: Xuất header Objective-C của tool đang chạy (chỉ đọc metadata, bỏ module xác thực).
+Maintainer: you
+Author: you
+Section: Tweaks
+Depends: mobilesubstrate
