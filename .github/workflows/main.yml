@@ -1,6 +1,7 @@
 # .github/workflows/main.yml
 # Đặt file này tại: <repo>/.github/workflows/main.yml
 # Build tweak Theos trên macOS runner, tạo file .deb và upload làm artifact.
+# Makefile nằm ở gốc repo nên project = "." (build từ thư mục gốc).
 
 name: Build tweak
 
@@ -15,8 +16,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Thêm thư mục tweak khác vào đây, ví dụ: ZZZZZZVideoStarTool
-        project: [VSDumpHeaders]
+        # "." = Makefile nằm ở gốc repo.
+        # Nếu tweak nằm trong thư mục con, đổi thành tên thư mục đó, ví dụ: VSDumpHeaders
+        project: ['.']
 
     steps:
       - name: Checkout
@@ -47,6 +49,6 @@ jobs:
       - name: Upload .deb
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.project }}-deb
-          path: ${{ matrix.project }}/packages/*.deb
+          name: deb
+          path: packages/*.deb
           if-no-files-found: error
